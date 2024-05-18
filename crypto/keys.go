@@ -4,6 +4,7 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"encoding/hex"
+	"fmt"
 	"io"
 )
 
@@ -11,6 +12,7 @@ const (
 	privKeyLen   = 64
 	publicKeyLen = 32
 	seedLen      = 32
+	signatureLen = 64
 	addressLen   = 20
 )
 
@@ -85,4 +87,23 @@ func (a Address) Bytes() []byte {
 
 func (a Address) String() string {
 	return hex.EncodeToString(a.value)
+}
+
+func SignatureFromBytes(b []byte) *Signature {
+	if len(b) != signatureLen {
+		errMessage := fmt.Sprintf("length of the bytes not equal to %d", signatureLen)
+		panic(errMessage)
+	}
+	return &Signature{
+		value: b,
+	}
+}
+
+func PublicKeyFromBytes(b []byte) *PublicKey {
+	if len(b) != publicKeyLen {
+		panic("invalid public key length")
+	}
+	return &PublicKey{
+		key: ed25519.PublicKey(b),
+	}
 }
